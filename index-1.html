@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9-sinf Fizika — Temperatura va uni o‘lchash</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#eef5ff;color:#14213d}
+header{padding:22px 16px;text-align:center;background:linear-gradient(135deg,#244c9b,#5b8def);color:white}
+h1{margin:0 0 8px;font-size:30px}.sub{margin:0;font-size:16px}
+nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:12px;background:white;position:sticky;top:0;z-index:5}
+nav button,.btn{border:0;border-radius:10px;padding:10px 14px;background:#244c9b;color:white;cursor:pointer;font-weight:600}
+nav button:hover,.btn:hover{filter:brightness(1.1)}
+main{max-width:1100px;margin:auto;padding:18px}.card{background:white;border-radius:18px;padding:20px;margin:16px 0;box-shadow:0 5px 18px #00000012}
+h2{color:#244c9b;margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+canvas{width:100%;height:260px;border-radius:14px;background:#0e1830;display:block}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+input[type=range]{width:min(500px,100%)}.value{font-size:22px;font-weight:bold}
+.thermo{height:270px;display:flex;justify-content:center;align-items:center;background:#f4f7fc;border-radius:15px;position:relative}
+.tube{width:24px;height:190px;border:4px solid #27364d;border-radius:15px 15px 12px 12px;position:relative;background:#fff;overflow:hidden}
+.mercury{position:absolute;bottom:0;left:0;width:100%;background:#e84c4c;height:50%}
+.bulb{position:absolute;width:48px;height:48px;border-radius:50%;background:#e84c4c;border:4px solid #27364d;bottom:25px}
+.scale{position:absolute;left:calc(50% + 35px);height:190px;display:flex;flex-direction:column;justify-content:space-between;font-size:12px}
+.formula{font-size:20px;background:#f0f5ff;padding:14px;border-radius:12px;text-align:center}
+.quiz{border:1px solid #d9e3f5;border-radius:12px;padding:14px;margin:10px 0}.quiz button{margin:5px;padding:9px 12px;border-radius:8px;border:1px solid #b9c8e5;background:white;cursor:pointer}
+.feedback{font-weight:bold;margin-top:6px}.ok{color:#16803c}.bad{color:#b42318}
+.hidden{display:none}.note{background:#fff8db;padding:12px;border-left:5px solid #e3b341;border-radius:8px}
+footer{text-align:center;padding:25px;color:#516079}
+</style>
+</head>
+<body>
+<header>
+<h1>🌡️ Temperatura va uni o‘lchash</h1>
+<p class="sub">9-sinf fizika • Interaktiv animatsiyalar va simulyatsiyalar</p>
+</header>
+
+<nav>
+<button onclick="show('intro')">Temperatura</button>
+<button onclick="show('particles')">Zarrachalar</button>
+<button onclick="show('thermo')">Termometr</button>
+<button onclick="show('scale')">Shkalalar</button>
+<button onclick="show('heat')">Qizish/Sovish</button>
+<button onclick="show('quiz')">Mini-test</button>
+</nav>
+
+<main>
+<section id="plan" class="card">
+<h2>📚 Dars rejasi</h2>
+<div class="grid">
+<div class="card"><h3>1-reja. Temperatura tushunchasi</h3><p>Temperatura nima? Molekulalarning tartibsiz harakati va temperatura bilan zarrachalar harakati orasidagi bog‘lanishni animatsiya orqali o‘rganish.</p></div>
+<div class="card"><h3>2-reja. Temperaturani o‘lchash</h3><p>Termometrning ishlash prinsipi, termometr shkalasi hamda Selsiy, Kelvin va Farengeyt shkalalarini interaktiv simulyatsiya yordamida o‘rganish.</p></div>
+<div class="card"><h3>3-reja. Qizish va sovish jarayonlari</h3><p>Jismlarning qizishi va sovishi, issiqlik almashinuvi hamda temperatura o‘zgarishini grafik va animatsiya orqali kuzatish.</p></div>
+</div>
+<div class="note"><b>Dars maqsadi:</b> temperatura tushunchasi, uni o‘lchash usullari va temperatura o‘zgarishlarini interaktiv simulyatsiyalar yordamida tushuntirish.</div>
+</section>
+<section id="intro" class="card">
+<h2>1. Temperatura nima?</h2>
+<p><b>Temperatura</b> — jismning qanchalik issiq yoki sovuqligini tavsiflovchi fizik kattalik. Modda zarrachalari doimo tartibsiz harakatda bo‘ladi.</p>
+<div class="grid">
+<div><canvas id="introCanvas"></canvas></div>
+<div>
+<p>🔵 <b>Past temperatura:</b> zarrachalar sekinroq harakat qiladi.</p>
+<p>🔴 <b>Yuqori temperatura:</b> zarrachalar tezroq harakat qiladi.</p>
+<div class="note">Simulyatsiyada temperaturani o‘zgartirib, zarrachalar tezligidagi farqni kuzating.</div>
+</div>
+</div>
+</section>
+
+<section id="particles" class="card hidden">
+<h2>2. Temperatura va molekulalar harakati</h2>
+<p>Idish ichidagi gaz zarrachalarining tartibsiz harakatini kuzating.</p>
+<div class="controls">
+<button class="btn" onclick="changeT(10)">➕ Temperaturani oshirish</button>
+<button class="btn" onclick="changeT(-10)">➖ Temperaturani kamaytirish</button>
+<button class="btn" onclick="pTemp=20">↺ 20°C ga qaytarish</button>
+<span class="value" id="pVal">20°C</span>
+</div>
+<canvas id="particlesCanvas"></canvas>
+<p id="particleText"></p>
+</section>
+
+<section id="thermo" class="card hidden">
+<h2>3. Termometr</h2>
+<p>Termometr temperaturani o‘lchaydi. Suyuqlikli termometrda qizish natijasida suyuqlik hajmi ortadi va naychada yuqoriga ko‘tariladi.</p>
+<div class="controls">
+<label>🌡️ Suyuqlik temperaturasi:
+<input id="thermoRange" type="range" min="-20" max="120" value="20" oninput="updateThermo()"></label>
+<span class="value" id="thermoVal">20°C</span>
+</div>
+<div class="thermo">
+<div class="tube"><div class="mercury" id="mercury"></div></div>
+<div class="bulb"></div>
+<div class="scale"><span>120°C</span><span>100°C</span><span>80°C</span><span>60°C</span><span>40°C</span><span>20°C</span><span>0°C</span><span>-20°C</span></div>
+</div>
+<p><b>Vazifa:</b> slayder yordamida 0°C, 20°C, 50°C va 100°C qiymatlarini toping.</p>
+</section>
+
+<section id="scale" class="card hidden">
+<h2>4. Temperatura shkalalari</h2>
+<div class="formula">K = t(°C) + 273 &nbsp;&nbsp; | &nbsp;&nbsp; °F = 9/5 · °C + 32</div>
+<div class="controls">
+<label>Selsiy:
+<input id="cRange" type="range" min="-50" max="150" value="20" oninput="convert()"></label>
+<span class="value" id="cVal">20°C</span>
+</div>
+<div class="grid">
+<div class="card"><h3>Selsiy</h3><div class="value" id="cOut">20°C</div></div>
+<div class="card"><h3>Kelvin</h3><div class="value" id="kOut">293 K</div></div>
+<div class="card"><h3>Farengeyt</h3><div class="value" id="fOut">68°F</div></div>
+</div>
+<div class="note"><b>Misol:</b> 20°C = 293 K.</div>
+</section>
+
+<section id="heat" class="card hidden">
+<h2>5. Qizish va sovish simulyatsiyasi</h2>
+<p>Issiq suv xona haroratiga yaqinlashib soviydi, sovuq suv esa xona haroratiga yaqinlashib isiydi.</p>
+<div class="controls">
+<button class="btn" onclick="resetHeat()">▶ Qayta boshlash</button>
+<span class="value" id="timeVal">0 s</span>
+</div>
+<div class="grid">
+<div class="card"><h3>🔥 Issiq suv</h3><div class="value" id="hotVal">90°C</div></div>
+<div class="card"><h3>❄️ Sovuq suv</h3><div class="value" id="coldVal">5°C</div></div>
+</div>
+<canvas id="heatCanvas"></canvas>
+<p>Grafikda temperaturaning vaqt o‘tishi bilan xona temperaturasi tomon o‘zgarishi ko‘rsatiladi.</p>
+</section>
+
+<section id="quiz" class="card hidden">
+<h2>6. Mini-test</h2>
+<div id="quizBox"></div>
+<div class="value" id="score"></div>
+</section>
+</main>
+<footer>9-sinf fizika • Temperatura va uni o‘lchash • Interaktiv dars materiali</footer>
+
+<script>
+function show(id){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
+const intro=document.getElementById('introCanvas'), ic=intro.getContext('2d');
+let balls=[]; for(let i=0;i<28;i++)balls.push({x:Math.random()*intro.width,y:Math.random()*intro.height,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2});
+function drawIntro(){ic.clearRect(0,0,intro.width,intro.height);balls.forEach(b=>{b.x=(b.x+b.vx+intro.width)%intro.width;b.y=(b.y+b.vy+intro.height)%intro.height;ic.beginPath();ic.arc(b.x,b.y,6,0,7);ic.fillStyle='#70a1ff';ic.fill()});requestAnimationFrame(drawIntro)}drawIntro();
+
+const pc=document.getElementById('particlesCanvas'), ctx=pc.getContext('2d'); let pTemp=20;
+let ps=[];for(let i=0;i<45;i++)ps.push({x:Math.random()*pc.width,y:Math.random()*pc.height,vx:Math.random()-.5,vy:Math.random()-.5});
+function changeT(d){pTemp=Math.max(-50,Math.min(150,pTemp+d))}
+function drawParticles(){ctx.clearRect(0,0,pc.width,pc.height);let speed=.4+(pTemp+50)/100;
+ps.forEach(p=>{let m=Math.hypot(p.vx,p.vy)||1;p.vx=p.vx/m*speed;p.vy=p.vy/m*speed;p.x+=p.vx;p.y+=p.vy;if(p.x<5||p.x>pc.width-5)p.vx*=-1;if(p.y<5||p.y>pc.height-5)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,5,0,7);ctx.fillStyle=pTemp>70?'#ff5a5f':pTemp<10?'#58a6ff':'#ffd166';ctx.fill()});
+document.getElementById('pVal').textContent=pTemp+'°C';
+document.getElementById('particleText').textContent=pTemp>60?'Temperatura yuqori: zarrachalar tezroq harakat qilmoqda.':pTemp<10?'Temperatura past: zarrachalar sekinroq harakat qilmoqda.':'O‘rtacha temperatura: zarrachalar harakati o‘rtacha tezlikda.';
+requestAnimationFrame(drawParticles)}drawParticles();
+
+function updateThermo(){let t=+document.getElementById('thermoRange').value;document.getElementById('thermoVal').textContent=t+'°C';document.getElementById('mercury').style.height=Math.max(3,((t+20)/140)*100)+'%'}
+function convert(){let c=+document.getElementById('cRange').value;document.getElementById('cVal').textContent=c+'°C';document.getElementById('cOut').textContent=c+'°C';document.getElementById('kOut').textContent=(c+273)+' K';document.getElementById('fOut').textContent=((9*c/5)+32).toFixed(1)+'°F'}
+let hot=90,cold=5,time=0,heatTimer=null,history=[];
+function resetHeat(){hot=90;cold=5;time=0;history=[];clearInterval(heatTimer);heatTimer=setInterval(()=>{hot-=.7; cold+=.45;time++;history.push([hot,cold]);document.getElementById('hotVal').textContent=hot.toFixed(1)+'°C';document.getElementById('coldVal').textContent=cold.toFixed(1)+'°C';document.getElementById('timeVal').textContent=time+' s';drawHeat();if(time>=90)clearInterval(heatTimer)},100)}
+const hc=document.getElementById('heatCanvas'),hh=hc.getContext('2d');
+function drawHeat(){hh.clearRect(0,0,hc.width,hc.height);hh.strokeStyle='#b9c8e5';hh.beginPath();hh.moveTo(45,20);hh.lineTo(45,hc.height-35);hh.lineTo(hc.width-20,hc.height-35);hh.stroke();if(history.length<2)return;function line(index){hh.beginPath();history.forEach((v,i)=>{let x=45+i*(hc.width-70)/90,y=20+(120-v[index])*1.5;if(i===0)hh.moveTo(x,y);else hh.lineTo(x,y)});hh.stroke()}line(0);line(1)}
+const qs=[
+['Temperatura nimani ifodalaydi?',['Jismning issiq-sovuqlik holatini','Jism massasini','Jism hajmini','Vaqtni'],0],
+['Temperaturani o‘lchash asbobi nima?',['Barometr','Termometr','Ampermetr','Dinamometr'],1],
+['0°C necha Kelvin?',['0 K','100 K','273 K','373 K'],2],
+['100°C necha Kelvin?',['173 K','273 K','373 K','473 K'],2],
+['Temperatura oshganda molekulalar harakati qanday o‘zgaradi?',['Sekinlashadi','Tezlashadi','To‘xtaydi','O‘zgarmaydi'],1]
+];
+let answered=0,score=0;const qb=document.getElementById('quizBox');
+qs.forEach((q,qi)=>{let d=document.createElement('div');d.className='quiz';d.innerHTML='<b>'+(qi+1)+'. '+q[0]+'</b>';q[1].forEach((a,ai)=>{let b=document.createElement('button');b.textContent=a;b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;answered++;if(ai===q[2]){score++;d.insertAdjacentHTML('beforeend','<div class="feedback ok">✓ To‘g‘ri!</div>')}else d.insertAdjacentHTML('beforeend','<div class="feedback bad">✗ Noto‘g‘ri. To‘g‘ri javob: '+q[1][q[2]]+'</div>');document.getElementById('score').textContent='Natija: '+score+'/'+answered};d.appendChild(b)});qb.appendChild(d)});
+updateThermo();convert();drawHeat();
+</script>
+</body>
+</html>
